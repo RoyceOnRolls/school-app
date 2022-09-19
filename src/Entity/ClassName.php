@@ -25,9 +25,13 @@ class ClassName
     #[ORM\OneToMany(mappedBy: 'className', targetEntity: Student::class, orphanRemoval: true)]
     private Collection $students;
 
+    #[ORM\OneToMany(mappedBy: 'className', targetEntity: Announcement::class, orphanRemoval: true)]
+    private Collection $announcements;
+
     public function __construct()
     {
         $this->students = new ArrayCollection();
+        $this->announcements = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -83,6 +87,36 @@ class ClassName
             // set the owning side to null (unless already changed)
             if ($student->getClassName() === $this) {
                 $student->setClassName(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Announcement>
+     */
+    public function getAnnouncements(): Collection
+    {
+        return $this->announcements;
+    }
+
+    public function addAnnouncement(Announcement $announcement): self
+    {
+        if (!$this->announcements->contains($announcement)) {
+            $this->announcements->add($announcement);
+            $announcement->setClassName($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAnnouncement(Announcement $announcement): self
+    {
+        if ($this->announcements->removeElement($announcement)) {
+            // set the owning side to null (unless already changed)
+            if ($announcement->getClassName() === $this) {
+                $announcement->setClassName(null);
             }
         }
 
